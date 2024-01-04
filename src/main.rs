@@ -1,6 +1,9 @@
+mod handlers;
+
 use std::{env, time::Duration};
 
 use axum::{routing::get, Router};
+use handlers::health_check_handler;
 use sqlx::postgres::PgPoolOptions;
 
 #[tokio::main]
@@ -28,9 +31,4 @@ async fn main() {
         .await
         .unwrap();
     axum::serve(listener, app).await.unwrap();
-}
-
-// Configure health check handler
-async fn health_check_handler() -> &'static str {
-    "Local Hotel is alive and kicking"
 }
