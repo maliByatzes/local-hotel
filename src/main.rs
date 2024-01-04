@@ -1,4 +1,5 @@
 mod handlers;
+mod models;
 
 use std::{env, time::Duration};
 
