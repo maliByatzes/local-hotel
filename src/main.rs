@@ -1,11 +1,13 @@
+mod config;
 mod handlers;
+mod models;
 
 use std::{env, sync::Arc, time::Duration};
 
 use axum::{routing::get, Router};
+use dotenv::dotenv;
 use handlers::health_check_handler;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use dotenv::dotenv;
 
 pub struct AppState {
     db: Pool<Postgres>,
