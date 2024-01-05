@@ -1,5 +1,6 @@
 mod config;
 mod handlers;
+mod jwt_auth;
 mod models;
 mod response;
 mod schema;

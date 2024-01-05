@@ -22,3 +22,5 @@ jsonwebtoken = "9.2.0"
 argon2 = "0.5.2"
 rand_core = { version = "0.6.4", features = ["std"] }
 tower-http = { version = "0.5.0", features = ["cors"] }
+axum-extra = { version = "0.9.1", features = ["cookie"] }
+time = "0.3.31"
