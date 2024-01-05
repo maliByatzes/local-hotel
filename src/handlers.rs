@@ -98,7 +98,7 @@ pub async fn health_check_handler() -> impl IntoResponse {
     Json(json_resp)
 }
 
-pub async fn login_user_handler(
+pub async fn login_guest_handler(
     State(data): State<Arc<AppState>>,
     Json(body): Json<LoginGuestSchema>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {

@@ -3,15 +3,21 @@ mod handlers;
 mod jwt_auth;
 mod models;
 mod response;
+mod route;
 mod schema;
 
 use std::{sync::Arc, time::Duration};
 
-use axum::{routing::get, Router};
+use crate::route::create_router;
+
+use axum::http::{
+    header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
+    HeaderValue, Method,
+};
 use config::Config;
 use dotenv::dotenv;
-use handlers::health_check_handler;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use tower_http::cors::CorsLayer;
 
 pub struct AppState {
     db: Pool<Postgres>,
@@ -41,6 +47,12 @@ async fn main() {
         }
     };
 
+    let cors = CorsLayer::new()
+        .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+        .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
+        .allow_credentials(true)
+        .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
+
     // Init app state
     let app_state = Arc::new(AppState {
         db: db_pool.clone(),
@@ -49,9 +61,7 @@ async fn main() {
 
     // Configure routing with application
     // Add database to the app
-    let app = Router::new()
-        .route("/health", get(health_check_handler))
-        .with_state(app_state);
+    let app = create_router(app_state).layer(cors);
 
     println!("🚀 Server started successfully, on port 3000");
     // Run app with tokio rt
