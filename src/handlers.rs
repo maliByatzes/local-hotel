@@ -186,6 +186,19 @@ pub async fn logout_handle() -> Result<impl IntoResponse, (StatusCode, Json<serd
     Ok(response)
 }
 
+pub async fn get_me_handler(
+    Extension(guest): Extension<Guest>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let json_response = serde_json::json!({
+        "status": "success",
+        "data": serde_json::json!({
+            "guest": filter_guest_record(&guest)
+        })
+    });
+
+    Ok(Json(json_response))
+}
+
 fn filter_guest_record(guest: &Guest) -> FilteredGuest {
     FilteredGuest {
         id: guest.id,
