@@ -330,6 +330,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dotenv"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
+
+[[package]]
 name = "dotenvy"
 version = "0.15.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -794,7 +800,9 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "chrono",
+ "dotenv",
  "serde",
+ "serde_json",
  "sqlx",
  "tokio",
 ]
@@ -1418,6 +1426,7 @@ dependencies = [
  "atoi",
  "byteorder",
  "bytes",
+ "chrono",
  "crc",
  "crossbeam-queue",
  "dotenvy",
@@ -1502,6 +1511,7 @@ dependencies = [
  "bitflags 2.4.1",
  "byteorder",
  "bytes",
+ "chrono",
  "crc",
  "digest",
  "dotenvy",
@@ -1543,6 +1553,7 @@ dependencies = [
  "base64",
  "bitflags 2.4.1",
  "byteorder",
+ "chrono",
  "crc",
  "dotenvy",
  "etcetera",
@@ -1579,6 +1590,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "210976b7d948c7ba9fced8ca835b11cbb2d677c59c79de41ac0d397e14547490"
 dependencies = [
  "atoi",
+ "chrono",
  "flume",
  "futures-channel",
  "futures-core",
