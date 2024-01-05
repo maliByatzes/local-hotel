@@ -1,6 +1,7 @@
 mod config;
 mod handlers;
 mod models;
+mod schema;
 
 use std::{env, sync::Arc, time::Duration};
 
