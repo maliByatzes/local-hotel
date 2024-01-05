@@ -4,29 +4,30 @@ mod models;
 mod response;
 mod schema;
 
-use std::{env, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use axum::{routing::get, Router};
+use config::Config;
 use dotenv::dotenv;
 use handlers::health_check_handler;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 pub struct AppState {
     db: Pool<Postgres>,
+    env: Config,
 }
 
 #[tokio::main]
 async fn main() {
     dotenv().ok();
 
-    // Get the connection string
-    let db_connection_str = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let config = Config::init();
 
     // Set up the database connection pool
     let db_pool = match PgPoolOptions::new()
         .max_connections(10)
         .acquire_timeout(Duration::from_secs(3))
-        .connect(&db_connection_str)
+        .connect(&config.database_url)
         .await
     {
         Ok(pool) => {
@@ -42,6 +43,7 @@ async fn main() {
     // Init app state
     let app_state = Arc::new(AppState {
         db: db_pool.clone(),
+        env: config.clone(),
     });
 
     // Configure routing with application
