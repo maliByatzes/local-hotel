@@ -2,12 +2,12 @@
 
 -- Delete guest table
 
-drop table if exists "guest"
+drop table if exists "guest" cascade;
 
 -- Delete payment_status table
 
-drop table if exists "payment_status"
+drop table if exists "payment_status" cascade;
 
 -- Delete booking table
 
-drop table if exists "booking"
+drop table if exists "booking" cascade;

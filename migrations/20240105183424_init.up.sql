@@ -7,6 +7,8 @@ create table if not exists "guest" (
   first_name varchar(100) not null,
   last_name varchar(100) not null,
   email_address varchar(100) not null unique,
+  password varchar(100) not null,
+  verified boolean not null default false,
   phone_number varchar(20) not null unique,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
