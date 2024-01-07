@@ -23,11 +23,11 @@ pub struct Booking {
     pub id: i32,
     pub guest_id: i32,
     pub payment_status_id: i32,
-    pub checkin_date: Option<DateTime<Utc>>,
-    pub checkout_date: Option<DateTime<Utc>>,
-    pub num_adults: Option<i32>,
-    pub num_children: Option<i32>,
-    pub booking_amount: Option<f64>,
+    pub checkin_date: DateTime<Utc>,
+    pub checkout_date: DateTime<Utc>,
+    pub num_adults: i32,
+    pub num_children: i32,
+    pub booking_amount: f64,
     #[serde(rename = "createdAt")]
     pub created_at: Option<DateTime<Utc>>,
     #[serde(rename = "updatedAt")]

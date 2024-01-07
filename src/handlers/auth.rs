@@ -120,18 +120,6 @@ pub async fn register_guest_handler(
     Ok(Json(guest_response))
 }
 
-// Configure health check handler
-pub async fn health_check_handler() -> impl IntoResponse {
-    const MESSAGE: &str = "Local Hotel API is alive and well";
-
-    let json_resp = serde_json::json!({
-        "status": "success",
-        "message": MESSAGE
-    });
-
-    Json(json_resp)
-}
-
 // Handler to login the guest using parsed json data
 pub async fn login_guest_handler(
     State(data): State<Arc<AppState>>,
