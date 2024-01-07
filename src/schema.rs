@@ -7,6 +7,7 @@ pub struct TokenClaims {
     pub exp: usize,
 }
 
+// TODO: Validation
 #[derive(Debug, Deserialize)]
 pub struct RegisterGuestSchema {
     pub first_name: String,
@@ -16,6 +17,7 @@ pub struct RegisterGuestSchema {
     pub phone_number: String,
 }
 
+// TODO: Validation
 #[derive(Debug, Deserialize)]
 pub struct LoginGuestSchema {
     pub email_address: String,
