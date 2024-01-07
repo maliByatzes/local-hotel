@@ -1,3 +1,4 @@
+// Import modules
 mod config;
 mod handlers;
 mod jwt_auth;
@@ -19,18 +20,24 @@ use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use tower_http::cors::CorsLayer;
 
+// Keep track of shared elements in the AppState structure
 pub struct AppState {
     db: Pool<Postgres>,
     env: Config,
 }
 
+// Use tokio runtime to make the main function async
 #[tokio::main]
 async fn main() {
+    // Check if the `.env` is available form the root directory
     dotenv().ok();
 
+    // Init config from config.rs with the environment variables
     let config = Config::init();
 
-    // Set up the database connection pool
+    // Set up the database connection pool,
+    // with 10 max connections
+    // and connection timeout of 3 seconds
     let db_pool = match PgPoolOptions::new()
         .max_connections(10)
         .acquire_timeout(Duration::from_secs(3))
@@ -47,6 +54,7 @@ async fn main() {
         }
     };
 
+    // Init cors with different configurations
     let cors = CorsLayer::new()
         .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])

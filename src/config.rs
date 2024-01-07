@@ -7,7 +7,9 @@ pub struct Config {
 }
 
 impl Config {
+    // Load the env varibles from the `.env` file
     pub fn init() -> Config {
+        // HACK: Use `expect_or()`instead of `expect()` for error handling
         let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
         let jwt_expires_in = std::env::var("JWT_EXPIRED_IN").expect("JWT_EXPIRED_IN must set");
