@@ -18,7 +18,7 @@ use crate::{
 // Construct a new router with all the paths
 pub fn create_router(app_state: Arc<AppState>) -> Router {
     Router::new()
-        .route("/v1/api/healthcheker", get(health_check_handler))
+        .route("/api/healthchecker", get(health_check_handler))
         .route("/v1/api/auth/register", post(register_guest_handler))
         .route("/v1/api/auth/login", post(login_guest_handler))
         .route(

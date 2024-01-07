@@ -50,7 +50,30 @@ pub async fn register_guest_handler(
         }
     }
 
-    // TODO: Check for duplicate phone number
+    // Check form the database if the supplied phone number already exists
+    let guest_exists: Option<bool> =
+        sqlx::query_scalar("select exists(select 1 from guest where phone_number = $1)")
+            .bind(body.phone_number.to_owned().to_ascii_lowercase())
+            .fetch_one(&data.db)
+            .await
+            .map_err(|e| {
+                let error_response = serde_json::json!({
+                    "status": "fail",
+                    "message": format!("Database error: {}", e),
+                });
+                (StatusCode::INTERNAL_SERVER_ERROR, Json(error_response))
+            })?;
+
+    // If the phone is found, the guest is not allowed to register
+    if let Some(exists) = guest_exists {
+        if exists {
+            let error_response = serde_json::json!({
+                "status": "fail",
+                "message": "Guest with that phone number already exists",
+            });
+            return Err((StatusCode::CONFLICT, Json(error_response)));
+        }
+    }
 
     // Generate a random salt for password hashing
     let salt = SaltString::generate(&mut OsRng);
