@@ -1,4 +1,4 @@
-use chrono::{DateTime, Utc};
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Default)]
@@ -33,8 +33,8 @@ pub struct LoginGuestSchema {
 
 #[derive(Debug, Serialize)]
 pub struct CreateBookingSchema {
-    pub checkin_date: DateTime<Utc>,
-    pub checkout_date: DateTime<Utc>,
+    pub checkin_date: NaiveDate,
+    pub checkout_date: NaiveDate,
     pub num_adults: i32,
     pub num_children: i32,
     pub booking_amount: f64,

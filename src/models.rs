@@ -1,5 +1,6 @@
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
+use sqlx::types::BigDecimal;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, sqlx::FromRow, Serialize, Clone)]
@@ -23,11 +24,11 @@ pub struct Booking {
     pub id: i32,
     pub guest_id: i32,
     pub payment_status_id: i32,
-    pub checkin_date: DateTime<Utc>,
-    pub checkout_date: DateTime<Utc>,
+    pub checkin_date: NaiveDate,
+    pub checkout_date: NaiveDate,
     pub num_adults: i32,
     pub num_children: i32,
-    pub booking_amount: f64,
+    pub booking_amount: BigDecimal,
     #[serde(rename = "createdAt")]
     pub created_at: Option<DateTime<Utc>>,
     #[serde(rename = "updatedAt")]
