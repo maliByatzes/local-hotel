@@ -40,3 +40,12 @@ pub struct CreateBookingSchema {
     pub num_children: i32,
     pub booking_amount: BigDecimal,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateBookingSchema {
+    pub checkin_date: Option<NaiveDate>,
+    pub checkout_date: Option<NaiveDate>,
+    pub num_adults: Option<i32>,
+    pub num_children: Option<i32>,
+    pub booking_amount: Option<BigDecimal>,
+}

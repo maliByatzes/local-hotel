@@ -10,7 +10,7 @@ use axum_macros::debug_handler;
 
 use crate::{
     models::{Booking, Guest},
-    schema::{CreateBookingSchema, FilterOptions},
+    schema::{CreateBookingSchema, FilterOptions, UpdateBookingSchema},
     AppState,
 };
 
@@ -141,5 +141,69 @@ pub async fn create_booking_handler(
 }
 
 // Handler to update a booking for the guest
+pub async fn update_booking_handler(
+    State(data): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+    Extension(guest): Extension<Guest>,
+    Json(body): Json<UpdateBookingSchema>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let query_result = sqlx::query_as!(
+        Booking,
+        "select * from booking where id = $1 and guest_id = $2",
+        id,
+        &guest.id
+    )
+    .fetch_one(&data.db)
+    .await;
+
+    if query_result.is_err() {
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": format!("Booking with ID: {} not found", id)
+        });
+        return Err((StatusCode::NOT_FOUND, Json(error_response)));
+    }
+
+    let now = chrono::Utc::now();
+    let booking = query_result.unwrap();
+
+    let query_result = sqlx::query_as!(
+        Booking,
+        "update booking set 
+        checkin_date = $1, 
+        checkout_date = $2, 
+        num_adults = $3, 
+        num_children = $4, 
+        booking_amount = $5, 
+        updated_at = $6 
+        where id = $7 and guest_id = $8 
+        returning *",
+        body.checkin_date.unwrap_or(booking.checkin_date),
+        body.checkout_date.unwrap_or(booking.checkout_date),
+        body.num_adults.unwrap_or(booking.num_adults),
+        body.num_children.unwrap_or(booking.num_children),
+        body.booking_amount.unwrap_or(booking.booking_amount),
+        now,
+        id,
+        &guest.id
+    )
+    .fetch_one(&data.db)
+    .await;
+
+    match query_result {
+        Ok(booking) => {
+            let booking_response = serde_json::json!({"status": "success","data": serde_json::json!({
+                "booking": booking
+            })});
+            return Ok(Json(booking_response));
+        }
+        Err(err) => {
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"status": "error", "message": format!("{:?}", err)})),
+            ))
+        }
+    }
+}
 
 // Handler to delete a booking for the guest

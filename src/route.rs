@@ -10,6 +10,7 @@ use crate::{
     handlers::{
         booking_list_handler, create_booking_handler, get_booking_handler, get_me_handler,
         health_check_handler, login_guest_handler, logout_handle, register_guest_handler,
+        update_booking_handler,
     },
     jwt_auth::auth,
     AppState,
@@ -43,6 +44,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         .route(
             "/v1/api/guest/booking/:id",
             get(get_booking_handler)
+                .patch(update_booking_handler)
                 .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .with_state(app_state)
