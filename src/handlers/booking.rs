@@ -207,3 +207,28 @@ pub async fn update_booking_handler(
 }
 
 // Handler to delete a booking for the guest
+pub async fn delete_booking_handler(
+    Path(id): Path<i32>,
+    State(data): State<Arc<AppState>>,
+    Extension(guest): Extension<Guest>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let rows_affected = sqlx::query!(
+        "delete from booking where id = $1 and guest_id = $2",
+        id,
+        &guest.id
+    )
+    .execute(&data.db)
+    .await
+    .unwrap()
+    .rows_affected();
+
+    if rows_affected == 0 {
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": format!("Booking with ID: {} not found", id),
+        });
+        return Err((StatusCode::NOT_FOUND, Json(error_response)));
+    }
+
+    Ok(StatusCode::NO_CONTENT)
+}
