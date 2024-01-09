@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Query, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
     Extension, Json,
@@ -56,7 +56,39 @@ pub async fn booking_list_handler(
 
     Ok(Json(json_response))
 }
+
 // Handler to get only one booking of the guest
+pub async fn get_booking_handler(
+    State(data): State<Arc<AppState>>,
+    Path(id): Path<i32>,
+    Extension(guest): Extension<Guest>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let query_result = sqlx::query_as!(
+        Booking,
+        "select * from booking where id = $1 and guest_id = $2",
+        id,
+        &guest.id
+    )
+    .fetch_one(&data.db)
+    .await;
+
+    match query_result {
+        Ok(booking) => {
+            let booking_response = serde_json::json!({"status": "success", "data": serde_json::json!({
+                "booking": booking
+            })});
+
+            return Ok(Json(booking_response));
+        }
+        Err(_) => {
+            let error_response = serde_json::json!({
+                "status": "fail",
+                "message": format!("Booking with ID: {} not found", id)
+            });
+            return Err((StatusCode::NOT_FOUND, Json(error_response)));
+        }
+    }
+}
 
 // Handler to create a booking for the guest
 #[debug_handler]
