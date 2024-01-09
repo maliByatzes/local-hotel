@@ -11,14 +11,18 @@ use std::{sync::Arc, time::Duration};
 
 use crate::route::create_router;
 
-use axum::http::{
-    header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
-    HeaderValue, Method,
+use axum::{
+    handler::Handler,
+    http::{
+        header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
+        HeaderValue, Method,
+    },
 };
 use config::Config;
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 use tower_http::cors::CorsLayer;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 // Keep track of shared elements in the AppState structure
 pub struct AppState {
@@ -31,6 +35,15 @@ pub struct AppState {
 async fn main() {
     // Check if the `.env` is available form the root directory
     dotenv().ok();
+
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                "local_hotel=debug,tower_http=debug,axum::rejection=trace".into()
+            }),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .init();
 
     // Init config from config.rs with the environment variables
     let config = Config::init();
