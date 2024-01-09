@@ -6,10 +6,11 @@ use axum::{
     response::IntoResponse,
     Extension, Json,
 };
+use axum_macros::debug_handler;
 
 use crate::{
     models::{Booking, Guest},
-    schema::FilterOptions,
+    schema::{CreateBookingSchema, FilterOptions},
     AppState,
 };
 
@@ -58,6 +59,54 @@ pub async fn booking_list_handler(
 // Handler to get only one booking of the guest
 
 // Handler to create a booking for the guest
+#[debug_handler]
+pub async fn create_booking_handler(
+    Extension(guest): Extension<Guest>,
+    State(data): State<Arc<AppState>>,
+    Json(body): Json<CreateBookingSchema>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    // Execute a SQL query to insert a new booking
+    let query_result = sqlx::query_as!(
+        Booking,
+        "insert into booking 
+            (
+                guest_id, 
+                payment_status_id, 
+                checkin_date, 
+                checkout_date, 
+                num_adults, 
+                num_children, 
+                booking_amount
+            ) 
+        values ($1, $2, $3, $4, $5, $6, $7)
+        returning *",
+        &guest.id,
+        3,
+        &body.checkin_date,
+        &body.checkout_date,
+        &body.num_adults,
+        &body.num_children,
+        &body.booking_amount
+    )
+    .fetch_one(&data.db)
+    .await;
+
+    match query_result {
+        Ok(booking) => {
+            let booking_response = serde_json::json!({"status": "success", "data": serde_json::json!({
+                "booking": booking
+            })});
+
+            return Ok((StatusCode::CREATED, Json(booking_response)));
+        }
+        Err(e) => {
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"status": "error", "message": format!("{:?}", e)})),
+            ));
+        }
+    }
+}
 
 // Handler to update a booking for the guest
 

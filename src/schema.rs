@@ -1,3 +1,4 @@
+use bigdecimal::BigDecimal;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 
@@ -31,11 +32,11 @@ pub struct LoginGuestSchema {
     pub password: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CreateBookingSchema {
     pub checkin_date: NaiveDate,
     pub checkout_date: NaiveDate,
     pub num_adults: i32,
     pub num_children: i32,
-    pub booking_amount: f64,
+    pub booking_amount: BigDecimal,
 }
