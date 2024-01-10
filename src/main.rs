@@ -11,12 +11,9 @@ use std::{sync::Arc, time::Duration};
 
 use crate::route::create_router;
 
-use axum::{
-    handler::Handler,
-    http::{
-        header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
-        HeaderValue, Method,
-    },
+use axum::http::{
+    header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
+    HeaderValue, Method,
 };
 use config::Config;
 use dotenv::dotenv;
@@ -58,11 +55,11 @@ async fn main() {
         .await
     {
         Ok(pool) => {
-            println!("✅Connection to the database is successful!");
+            tracing::debug!("✅Connection to the database is successful!");
             pool
         }
         Err(err) => {
-            println!("❌Failed connection to the database: {:?}", err);
+            tracing::error!("❌Failed connection to the database: {:?}", err);
             std::process::exit(1);
         }
     };
@@ -84,8 +81,8 @@ async fn main() {
     // Add database to the app
     let app = create_router(app_state).layer(cors);
 
-    println!("🚀 Server started successfully, on port 3000");
     // Run app with tokio rt
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    tracing::debug!("🚀 Server started successfully, on port 3000");
     axum::serve(listener, app).await.unwrap();
 }

@@ -9,7 +9,7 @@ use axum::{
 use crate::{
     handlers::{
         booking_list_handler, create_booking_handler, delete_booking_handler, get_booking_handler,
-        get_me_handler, health_check_handler, login_guest_handler, logout_handle,
+        get_me_handler, handler_404, health_check_handler, login_guest_handler, logout_handle,
         register_guest_handler, update_booking_handler,
     },
     jwt_auth::auth,
@@ -49,4 +49,5 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
                 .route_layer(middleware::from_fn_with_state(app_state.clone(), auth)),
         )
         .with_state(app_state)
+        .fallback(handler_404)
 }
