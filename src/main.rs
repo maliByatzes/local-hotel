@@ -64,6 +64,9 @@ async fn main() {
         }
     };
 
+    // Run db migrations
+    sqlx::migrate!().run(&db_pool).await.unwrap();
+
     // Init cors with different configurations
     let cors = CorsLayer::new()
         .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
